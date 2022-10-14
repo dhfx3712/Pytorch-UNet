@@ -42,15 +42,15 @@ def train_net(net,
     train_set, val_set = random_split(dataset, [n_train, n_val], generator=torch.Generator().manual_seed(0))
 
     # 3. Create data loaders
-    loader_args = dict(batch_size=batch_size, num_workers=4, pin_memory=True)
+    loader_args = dict(batch_size=batch_size, num_workers=0, pin_memory=True)
     train_loader = DataLoader(train_set, shuffle=True, **loader_args)
     val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
 
-    # (Initialize logging)
-    experiment = wandb.init(project='U-Net', resume='allow', anonymous='must')
-    experiment.config.update(dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
-                                  val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale,
-                                  amp=amp))
+    # # (Initialize logging)
+    # experiment = wandb.init(project='U-Net', resume='allow', anonymous='must')
+    # experiment.config.update(dict(epochs=epochs, batch_size=batch_size, learning_rate=learning_rate,
+    #                               val_percent=val_percent, save_checkpoint=save_checkpoint, img_scale=img_scale,
+    #                               amp=amp))
 
     logging.info(f'''Starting training:
         Epochs:          {epochs}
@@ -87,9 +87,13 @@ def train_net(net,
 
                 images = images.to(device=device, dtype=torch.float32)
                 true_masks = true_masks.to(device=device, dtype=torch.long)
+                print(f'train_loader : {images.shape},{true_masks.shape},label,{true_masks[0,300,:]}')
+                print(f'F.one_hot : {F.one_hot(true_masks, net.n_classes).permute(0, 3, 1, 2).shape}')
 
                 with torch.cuda.amp.autocast(enabled=amp):
                     masks_pred = net(images)
+                    print(f'net_image : {masks_pred.shape}')
+
                     loss = criterion(masks_pred, true_masks) \
                            + dice_loss(F.softmax(masks_pred, dim=1).float(),
                                        F.one_hot(true_masks, net.n_classes).permute(0, 3, 1, 2).float(),
@@ -103,11 +107,11 @@ def train_net(net,
                 pbar.update(images.shape[0])
                 global_step += 1
                 epoch_loss += loss.item()
-                experiment.log({
-                    'train loss': loss.item(),
-                    'step': global_step,
-                    'epoch': epoch
-                })
+                # experiment.log({
+                #     'train loss': loss.item(),
+                #     'step': global_step,
+                #     'epoch': epoch
+                # })
                 pbar.set_postfix(**{'loss (batch)': loss.item()})
 
                 # Evaluation round
@@ -117,25 +121,27 @@ def train_net(net,
                         histograms = {}
                         for tag, value in net.named_parameters():
                             tag = tag.replace('/', '.')
-                            histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
-                            histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
+                            # histograms['Weights/' + tag] = wandb.Histogram(value.data.cpu())
+                            # histograms['Gradients/' + tag] = wandb.Histogram(value.grad.data.cpu())
+                            histograms['Weights/' + tag] = None
+                            histograms['Gradients/' + tag] = None
 
                         val_score = evaluate(net, val_loader, device)
                         scheduler.step(val_score)
 
                         logging.info('Validation Dice score: {}'.format(val_score))
-                        experiment.log({
-                            'learning rate': optimizer.param_groups[0]['lr'],
-                            'validation Dice': val_score,
-                            'images': wandb.Image(images[0].cpu()),
-                            'masks': {
-                                'true': wandb.Image(true_masks[0].float().cpu()),
-                                'pred': wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu()),
-                            },
-                            'step': global_step,
-                            'epoch': epoch,
-                            **histograms
-                        })
+                        # experiment.log({
+                        #     'learning rate': optimizer.param_groups[0]['lr'],
+                        #     'validation Dice': val_score,
+                        #     'images': wandb.Image(images[0].cpu()),
+                        #     'masks': {
+                        #         'true': wandb.Image(true_masks[0].float().cpu()),
+                        #         'pred': wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu()),
+                        #     },
+                        #     'step': global_step,
+                        #     'epoch': epoch,
+                        #     **histograms
+                        # })
 
         if save_checkpoint:
             Path(dir_checkpoint).mkdir(parents=True, exist_ok=True)
