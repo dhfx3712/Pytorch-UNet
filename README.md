@@ -67,3 +67,10 @@ y2_shape =  torch.Size([8, 10])
 
 evaluate
 
+
+灰度图片
+1、channel=1
+2、true_masks 类型 （b,w,h），值0或1。masks_pred 类型 （b,outout,w,h）
+
+
+
