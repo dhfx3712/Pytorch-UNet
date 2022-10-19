@@ -74,3 +74,52 @@ evaluate
 
 
 
+
+
+batchnorm训练与预测的区别
+
+factor = 2 if bilinear else 1
+if bilinear:
+    factor=2
+    self.down4输出维度512
+    self.up1 上采样维度没有变化512，尺寸扩张为2倍。采样方法Upsamle
+else：
+    factor=1
+    self.down4输出维度1024
+    self.up1 上采样维度缩小1/2=512。采样方法逆卷积ConvTranspose2d
+    
+    
+
+
+
+
+up_input : torch.Size([1, 1024, 16, 16])
+up_ConvTranspose2d : torch.Size([1, 512, 32, 32])
+up_ConvTranspose2d_cat : torch.Size([1, 1024, 32, 32])
+x : torch.Size([1, 512, 32, 32]) ,x3 : torch.Size([1, 256, 64, 64])
+up_input : torch.Size([1, 512, 32, 32])
+up_ConvTranspose2d : torch.Size([1, 256, 64, 64])
+up_ConvTranspose2d_cat : torch.Size([1, 512, 64, 64])
+x : torch.Size([1, 256, 64, 64]) ,x2 : torch.Size([1, 128, 128, 128])
+up_input : torch.Size([1, 256, 64, 64])
+up_ConvTranspose2d : torch.Size([1, 128, 128, 128])
+up_ConvTranspose2d_cat : torch.Size([1, 256, 128, 128])
+x : torch.Size([1, 128, 128, 128]) ,x1 : torch.Size([1, 64, 256, 256])
+up_input : torch.Size([1, 128, 128, 128])
+up_ConvTranspose2d : torch.Size([1, 64, 256, 256])
+up_ConvTranspose2d_cat : torch.Size([1, 128, 256, 256])
+net_image : torch.Size([1, 2, 256, 256])
+
+
+
+amp Automatic mixed precision
+自动混合精度 nvidia显卡
+
+
+
+自己的数据集需要改
+train.py channel=1 
+data_loading.py self.mask_suffix
+
+
+

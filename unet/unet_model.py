@@ -14,12 +14,14 @@ class UNet(nn.Module):
         self.down1 = Down(64, 128)
         self.down2 = Down(128, 256)
         self.down3 = Down(256, 512)
+        #down，channel在增加，尺寸在缩小
         factor = 2 if bilinear else 1
         self.down4 = Down(512, 1024 // factor)
         self.up1 = Up(1024, 512 // factor, bilinear)
         self.up2 = Up(512, 256 // factor, bilinear)
         self.up3 = Up(256, 128 // factor, bilinear)
         self.up4 = Up(128, 64, bilinear)
+        #up，channel在减小，尺寸在增加
         self.outc = OutConv(64, n_classes)
 
     def forward(self, x):
@@ -29,8 +31,11 @@ class UNet(nn.Module):
         x4 = self.down3(x3)
         x5 = self.down4(x4)
         x = self.up1(x5, x4)
+        print (f'x : {x.shape} ,x3 : {x3.shape}')
         x = self.up2(x, x3)
+        print(f'x : {x.shape} ,x2 : {x2.shape}')
         x = self.up3(x, x2)
+        print(f'x : {x.shape} ,x1 : {x1.shape}')
         x = self.up4(x, x1)
         logits = self.outc(x)
         return logits

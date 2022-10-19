@@ -54,17 +54,21 @@ class Up(nn.Module):
             self.conv = DoubleConv(in_channels, out_channels)
 
     def forward(self, x1, x2):
+        print (f'up_input : {x1.shape}')
         x1 = self.up(x1)
+        print(f'up_ConvTranspose2d : {x1.shape}')
         # input is CHW
         diffY = x2.size()[2] - x1.size()[2]
         diffX = x2.size()[3] - x1.size()[3]
-
+        #先补左右W，再补上下H
         x1 = F.pad(x1, [diffX // 2, diffX - diffX // 2,
                         diffY // 2, diffY - diffY // 2])
         # if you have padding issues, see
         # https://github.com/HaiyongJiang/U-Net-Pytorch-Unstructured-Buggy/commit/0e854509c2cea854e247a9c615f175f76fbb2e3a
         # https://github.com/xiaopeng-liao/Pytorch-UNet/commit/8ebac70e633bac59fc22bb5195e513d5832fb3bd
+        #维度相同的拼接,chanel拼接
         x = torch.cat([x2, x1], dim=1)
+        print(f'up_ConvTranspose2d_cat : {x.shape}')
         return self.conv(x)
 
 
