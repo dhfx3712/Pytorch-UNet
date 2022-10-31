@@ -88,7 +88,9 @@ if __name__ == '__main__':
     logging.info(f'Using device {device}')
 
     net.to(device=device)
-    net.load_state_dict(torch.load(args.model, map_location=device))
+    #net.load_state_dict(torch.load('/Users/admin/.cache/torch/hub/checkpoints/unet_carvana_scale0.5_epoch2.pth', map_location=device))
+    net.load_state_dict(torch.hub.load_state_dict_from_url('https://github.com/milesial/Pytorch-UNet/releases/download/v3.0/unet_carvana_scale0.5_epoch2.pth',map_location=device))
+
 
     logging.info('Model loaded!')
 
