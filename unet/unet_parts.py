@@ -36,6 +36,7 @@ class Down(nn.Module):
         )
 
     def forward(self, x):
+        print(f'down_input : {x.shape}')
         return self.maxpool_conv(x)
 
 

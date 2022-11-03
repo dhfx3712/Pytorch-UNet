@@ -18,7 +18,7 @@ def dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: bool = False, 
     else:
         # compute and average metric for each batch element
         dice = 0
-        for i in range(input.shape[0]):
+        for i in range(input.shape[0]):#shape[0]遍历batch个数
             dice += dice_coeff(input[i, ...], target[i, ...])
         return dice / input.shape[0]
 
@@ -27,7 +27,7 @@ def multiclass_dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: boo
     # Average of Dice coefficient for all classes
     assert input.size() == target.size()
     dice = 0
-    for channel in range(input.shape[1]):
+    for channel in range(input.shape[1]):# shape[1]通道数也是分类的类别数
         dice += dice_coeff(input[:, channel, ...], target[:, channel, ...], reduce_batch_first, epsilon)
 
     return dice / input.shape[1]

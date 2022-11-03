@@ -92,7 +92,7 @@ else：
 
 
 
-
+整除的情况
 up_input : torch.Size([1, 1024, 16, 16])
 up_ConvTranspose2d : torch.Size([1, 512, 32, 32])
 up_ConvTranspose2d_cat : torch.Size([1, 1024, 32, 32])
@@ -109,6 +109,25 @@ up_input : torch.Size([1, 128, 128, 128])
 up_ConvTranspose2d : torch.Size([1, 64, 256, 256])
 up_ConvTranspose2d_cat : torch.Size([1, 128, 256, 256])
 net_image : torch.Size([1, 2, 256, 256])
+
+
+
+不能整除的情况
+down_input : torch.Size([1, 64, 640, 959])
+down_input : torch.Size([1, 128, 320, 479])
+down_input : torch.Size([1, 256, 160, 239])
+down_input : torch.Size([1, 512, 80, 119])
+up_input : torch.Size([1, 1024, 40, 59])
+up_ConvTranspose2d : torch.Size([1, 512, 80, 118])
+up_ConvTranspose2d_cat : torch.Size([1, 1024, 80, 119])
+x : torch.Size([1, 512, 80, 119]) ,x3 : torch.Size([1, 256, 160, 239])
+up_input : torch.Size([1, 512, 80, 119])
+up_ConvTranspose2d : torch.Size([1, 256, 160, 238])
+up_ConvTranspose2d_cat : torch.Size([1, 512, 160, 239])
+x : torch.Size([1, 256, 160, 239]) ,x2 : torch.Size([1, 128, 320, 479])
+up_input : torch.Size([1, 256, 160, 239])
+up_ConvTranspose2d : torch.Size([1, 128, 320, 478])
+up_ConvTranspose2d_cat : torch.Size([1, 256, 320, 479])
 
 
 

@@ -28,7 +28,7 @@ class BasicDataset(Dataset):
     @staticmethod
     def preprocess(pil_img, scale, is_mask):
         w, h = pil_img.size
-        newW, newH = int(scale * w), int(scale * h)
+        newW, newH = int(scale * w), int(scale * h) #截取小数部分
         assert newW > 0 and newH > 0, 'Scale is too small, resized images would have no pixel'
         pil_img = pil_img.resize((newW, newH), resample=Image.NEAREST if is_mask else Image.BICUBIC)
         img_ndarray = np.asarray(pil_img)
