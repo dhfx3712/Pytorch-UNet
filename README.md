@@ -142,3 +142,19 @@ data_loading.py self.mask_suffix
 
 
 
+
+损失函数
+dice_coefficient
+分子两个集合的交集*2，分母是两个集合相加
+
+区分jaccard系数
+分子两个集合的交集，分母两个集合的并集（当两个集合不相交时，并集是两个集合相加）
+
+
+
+语义分割联合边缘检测的多任务学习思路总结
+https://blog.csdn.net/qq_38861679/article/details/109464826
+
+
+
+
